@@ -8,17 +8,21 @@ import PublicRoute from './components/PublicRoute'
 import "./styles/main.scss";
 //import 'rsuite/dist/rsuite.min.css';
 import 'rsuite/dist/styles/rsuite-default.css';
+import { ProfileProvider } from "./context/profile.context";
 
 const App = () => {
   return (
-    <Switch>
-      <PublicRoute path='/signin'>
-        <SignIn></SignIn>
-      </PublicRoute>
-      <PrivateRoute path='/'>
-        <Home></Home>
-      </PrivateRoute>
-    </Switch>
+    <ProfileProvider>
+      <Switch>
+        <PublicRoute path='/signin'>
+          <SignIn></SignIn>
+        </PublicRoute>
+        <PrivateRoute path='/'>
+          <Home></Home>
+        </PrivateRoute>
+      </Switch>
+    </ProfileProvider>
+
   );
 }
 
