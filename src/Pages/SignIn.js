@@ -46,7 +46,7 @@ const SignIn = () => {
                                 <Button color="blue" appearance="primary" block onClick={onFacebookSignIn} >
                                    <Icon icon='facebook' />  Continue With Facebook
                                 </Button>
-                                <Button color="green" appearance="primary" block onClick={onGoogleSignIn} >
+                                <Button color="red" appearance="primary" block onClick={onGoogleSignIn} >
                                 <Icon icon='google' />   Continue With Google
                                 </Button>
                             </div>
