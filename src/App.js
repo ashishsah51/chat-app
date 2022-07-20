@@ -2,7 +2,7 @@ import React from "react";
 import { Switch } from "react-router";
 
 import SignIn from './Pages/SignIn'
-import Home from "./Pages/Home";
+import Home from "./Pages/Home/index";
 import PrivateRoute from "./components/PrivateRoute"
 import PublicRoute from './components/PublicRoute'
 import "./styles/main.scss";
@@ -19,7 +19,7 @@ const App = () => {
           <SignIn></SignIn>
         </PublicRoute>
         <PrivateRoute path='/'>
-          <Home></Home>
+          <Home />
         </PrivateRoute>
       </Switch>
     </ProfileProvider>

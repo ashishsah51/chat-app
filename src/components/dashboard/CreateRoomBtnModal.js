@@ -84,7 +84,7 @@ const CreateRoomBtnModal = () => {
 
                         <FormGroup>
                             <ControlLabel>Description</ControlLabel>
-                            <FormControl componentClass="textarea" row={5} name="description" placeholder="Enter room description..." />
+                            <FormControl componentClass="textarea" rows={5} name="description" placeholder="Enter room description..." />
                         </FormGroup>
                     </Form>
                 </Modal.Body>
