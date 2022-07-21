@@ -8,8 +8,8 @@ import Chat from "./Chat";
 
 const Home = () => {
 
-    const isDesktop = useMediaQuery('(min-width: 992px');
-    console.log(isDesktop);
+    const isDesktop = useMediaQuery('(min-width: 992px)');
+    //console.log(isDesktop);
     const { isExact } = useRouteMatch();
     const canRenderSidebar = isDesktop || isExact;
 

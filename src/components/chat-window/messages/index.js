@@ -1,9 +1,12 @@
-import React from "react";
+import React, { memo } from "react";
+//import { useCurrentRoom } from "../../../context/current-room.context";
 
 const Messages = () => {
+    //const messages = useCurrentRoom(v => v.description);
+
     return (
-        <div>Messages</div>
+        <div>messages</div>
     )
 }
 
-export default Messages;
+export default memo(Messages);
