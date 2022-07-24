@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Tag, Icon, Button, Alert } from "rsuite";
 import { auth } from "../../misc/firebase";
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 const ProviderBlock = () => {
 
     const [isConnected, setIsConnected] = useState({
-        'google.com': auth.currentUser.providerData.some(
+        'google.com': auth.currentUser?.providerData?.some(
             data => data.providerId === 'google.com'
         ),
-        'facebook.com': auth.currentUser.providerData.some(
+        'facebook.com': auth.currentUser?.providerData?.some(
             data => data.providerId === 'facebook.com'
         )
     });

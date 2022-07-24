@@ -5,6 +5,8 @@ import ChatBottom from "../../components/chat-window/bottom";
 import { useParams } from "react-router";
 import { useRooms } from "../../context/rooms.context";
 import { Loader } from "rsuite";
+import { transformToArr } from "../../misc/helper";
+import { auth } from "../../misc/firebase";
 import { CurrentRoomProvider } from "../../context/current-room.context";
 
 const Chat = () => {
@@ -23,9 +25,14 @@ const Chat = () => {
 
     const { name, description } = currentRoom;
 
+    const admins = transformToArr(currentRoom.admins);
+    const isAdmin = admins.includes(auth.currentUser.uid);
+
     const currentRoomData = {
         name,
-        description
+        description,
+        admins,
+        isAdmin
     }
 
     return (
