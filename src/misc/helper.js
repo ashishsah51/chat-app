@@ -4,7 +4,7 @@ export function getNameInitials(name) {
 
     const splitName = name.toUpperCase().split(' ');
 
-    if(splitName.length > 1) {
+    if (splitName.length > 1) {
         return splitName[0][0] + splitName[1][0];
     }
 
@@ -17,9 +17,9 @@ export function transformToArr(snapVal) {
 
 export function transformToArrayWithId(snapVal) {
     return snapVal ? Object.keys(snapVal).map(roomId => {
-        return { ...snapVal[roomId], id:roomId };
+        return { ...snapVal[roomId], id: roomId };
     })
-    : [];
+        : [];
 }
 
 export async function getUserUpdates(userId, keyToUpdate, value, db) {
@@ -41,4 +41,18 @@ export async function getUserUpdates(userId, keyToUpdate, value, db) {
         updates[`/rooms/${roomSnap.key}/lastMessage/author/${keyToUpdate}`] = value;
     })
     return updates;
+}
+
+export function groupBy(array, groupingKeyFn) {
+    return array.reduce((result, item) => {
+        const groupingKey = groupingKeyFn(item);
+
+        if (!result[groupingKey]) {
+            result[groupingKey] = [];
+        }
+
+        result[groupingKey].push(item);
+
+        return result;
+    }, {})
 }

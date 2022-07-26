@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useState, useCallback } from "react";
 import { Alert } from "rsuite";
 import { useParams } from "react-router";
-import { database } from "../../../misc/firebase";
-import { transformToArrayWithId } from "../../../misc/helper"
+import { database, storage } from "../../../misc/firebase";
+import { transformToArrayWithId, groupBy } from "../../../misc/helper"
 import MessageItem from "./MessageItem";
 import { auth } from "../../../misc/firebase";
 
@@ -20,7 +20,7 @@ const Messages = () => {
         const messagesRef = database.ref('/messages');
 
         messagesRef.orderByChild('roomId').equalTo(chatId).on('value', (snap) => {
-            
+
             const data = transformToArrayWithId(snap.val());
 
             setMessages(data);
@@ -33,44 +33,44 @@ const Messages = () => {
     }, [chatId]);
 
     const handleAdmin = useCallback(
-      async (uid) => {
-        const adminsRef = database.ref(`/rooms/${chatId}/admins`);
+        async (uid) => {
+            const adminsRef = database.ref(`/rooms/${chatId}/admins`);
 
-        let alertMsg;
-        await adminsRef.transaction(admins => {
-            if(admins) {
-                if(admins[uid]) {
-                    admins[uid] = null;
-                    alertMsg = 'Admin permissin removed';
-                } else {
-                    admins[uid] = true;
-                    alertMsg = 'Admin permissin granted';
+            let alertMsg;
+            await adminsRef.transaction(admins => {
+                if (admins) {
+                    if (admins[uid]) {
+                        admins[uid] = null;
+                        alertMsg = 'Admin permissin removed';
+                    } else {
+                        admins[uid] = true;
+                        alertMsg = 'Admin permissin granted';
+                    }
                 }
-            }
-            return admins;
-        });
+                return admins;
+            });
 
-        Alert.info(alertMsg, 4000);
+            Alert.info(alertMsg, 4000);
 
-      },
-      [chatId],
+        },
+        [chatId],
     )
 
-    const handleLike = useCallback( async (msgId) => {
+    const handleLike = useCallback(async (msgId) => {
 
-        const {uid} = auth.currentUser;
+        const { uid } = auth.currentUser;
         const messageRef = database.ref(`/messages/${msgId}`);
 
         let alertMsg;
         await messageRef.transaction(msg => {
-            if(msg) {
-                if(msg.likes && msg.likes[uid]) {
+            if (msg) {
+                if (msg.likes && msg.likes[uid]) {
                     msg.likeCount -= 1;
                     msg.likes[uid] = null;
                     alertMsg = 'Like removed';
                 } else {
                     msg.likeCount += 1;
-                    if(!msg.likes) {
+                    if (!msg.likes) {
                         msg.likes = {};
                     }
                     msg.likes[uid] = true;
@@ -83,25 +83,25 @@ const Messages = () => {
         Alert.info(alertMsg, 4000);
     }, [])
 
-    const handleDelete = useCallback( async (msgId) => {
+    const handleDelete = useCallback(async (msgId, file) => {
 
-        if( !window.confirm('Delete this message?')) {
+        if (!window.confirm('Delete this message?')) {
             return;
         }
 
-        const isLast = messages[messages.length-1].id === msgId;
+        const isLast = messages[messages.length - 1].id === msgId;
         const updates = {};
 
         updates[`/messages/${msgId}`] = null;
 
         if (isLast && messages.length > 1) {
             updates[`/rooms/${chatId}/lastMessage`] = {
-              ...messages[messages.length - 2],
-              msgId: messages[messages.length - 2].id,
+                ...messages[messages.length - 2],
+                msgId: messages[messages.length - 2].id,
             };
-          }
+        }
 
-        if(isLast && messages.length === 1) {
+        if (isLast && messages.length === 1) {
             updates[`/rooms/${chatId}/lastMessage`] = null;
         }
 
@@ -109,21 +109,53 @@ const Messages = () => {
             await database.ref().update(updates);
             Alert.info('Messages has been deleted', 4000);
         } catch (err) {
-            Alert.error(err.message, 4000);
+            return Alert.error(err.message, 4000);
+        }
+
+        if (file) {
+            try {
+                const fileRef = storage.refFromURL(file.url);
+                await fileRef.delete();
+            } catch (err) {
+                Alert.error(err.message, 4000);
+            }
         }
 
     }, [chatId, messages]);
 
+
+    const renderMessage = () => {
+        const groups = groupBy(messages,
+            (item) => new Date(item.createdAt).toDateString()
+        );
+        let items = [];
+
+        Object.keys(groups).forEach((date) => {
+
+            items.push(
+                <li key={date} className="text-center mb-1 padded" >
+                    {date}
+                </li>
+            );
+
+            const msgs = groups[date].map(msg => (
+                <MessageItem
+                    key={msg.id}
+                    message={msg}
+                    handleAdmin={handleAdmin}
+                    handleLike={handleLike}
+                    handleDelete={handleDelete}
+                />
+            ));
+            items.push(...msgs);
+        })
+        return items;
+    }
+
     return (
         <ul className="msg-list custom-scroll">
             {isChatEmpty && <li>No message yet</li>}
-            {canShowMessages && messages.map(msg => <MessageItem 
-               key={msg.id} 
-               message={msg} 
-               handleAdmin={handleAdmin} 
-               handleLike={handleLike}
-               handleDelete={handleDelete}
-            />)}
+            {canShowMessages && renderMessage()}
         </ul>
     )
 }
