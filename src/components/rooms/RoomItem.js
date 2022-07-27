@@ -4,6 +4,8 @@ import ProfileAvatar from "../dashboard/ProfileAvatar";
 
 const RoomItem = ({ room }) => {
     const { createdAt, name, lastMessage } = room;
+
+    //console.log(room);
     return (
         <div>
             <div className="d-flex justify-content-between align-items-center">

@@ -95,4 +95,3 @@ const ProviderBlock = () => {
 }
 
 export default ProviderBlock;
-

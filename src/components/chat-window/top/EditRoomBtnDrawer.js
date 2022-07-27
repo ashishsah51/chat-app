@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Button, Drawer, Alert } from 'rsuite';
 import { useParams } from 'react-router';
 import { useMediaQuery, useModalState } from "../../../misc/custom-hook"
@@ -67,4 +67,4 @@ const EditRoomBtnDrawer = () => {
   )
 }
 
-export default EditRoomBtnDrawer
+export default memo(EditRoomBtnDrawer);
